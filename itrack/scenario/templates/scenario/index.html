@@ -1,0 +1,851 @@
+{% load app_filters %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+
+        <!--website icon Start-->
+        <link rel="apple-touch-icon" sizes="180x180" href="../static/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="../static/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="../static/favicon/favicon-16x16.png">
+        <link rel="manifest" href="../static/favicon/manifest.json">
+        <link rel="mask-icon" href="../static/favicon/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="theme-color" content="#ffffff">
+        <!--website icon End-->
+
+        <script type="text/javascript">
+            document.write("<base href='" + document.location.protocol + "//" + document.location.host + "' />");
+
+			//https://stackoverflow.com/questions/7364150/find-object-by-id-in-an-array-of-javascript-objects
+			// array = [{key:value},{key:value}]
+			function objectFindByKey(array, key, value) {
+				for (var i = 0; i < array.length; i++) {
+					if (array[i][key] === value) {
+						return array[i];
+					}
+				}
+				return null;
+			}
+
+			function findElementByText(text){
+				var elm=$("div:contains("+text+")")
+					.filter(function(){ return $(this).children().length === 0;});
+				return elm;
+			}
+
+			function highlightON(me){
+			    $('label').removeClass('linearBlink');
+			    me = $('#'+me).parent();
+
+			    // am I hidden !visible
+			    /*if($(me).is(":hidden")){
+                    $(me).parent().parent().parent().collapse('show');
+                }*/
+
+                /////if($(me).parent().parent().parent().parent().children().attr('aria-expanded') == 'false'){
+                /*if(!$(me).parent().parent().parent().hasClass('collapse show')){
+                    $(me).parent().parent().parent().collapse('show');
+                    $(me).parent().parent().parent().on('shown.bs.collapse', function () {
+                        w = $(me).offset().top-100;
+                        $('html,body').animate({scrollTop: w},'slow',function(){
+                            $(me).addClass('linearBlink');
+                            setTimeout(function(){
+                                $(me).removeClass('linearBlink');
+                            }, 2000);
+                        });
+                    });
+                } else {
+                    $(me).addClass('linearBlink');
+                    setTimeout(function(){
+                        $(me).removeClass('linearBlink');
+                    }, 2000);
+                }*/
+
+
+                w = $(me).offset().top-100;
+                $('html,body').animate({scrollTop: w},'slow',function(){
+                    $(me).addClass('linearBlink');
+                    setTimeout(function(){
+                        $(me).removeClass('linearBlink');
+                    }, 2000);
+                });
+
+
+				//findElementByText($(me).text()).addClass("highlighter");
+                ////$('html,body').animate({scrollTop: $(me).offset().top-100},'slow', function(){$('html,body').animate({scrollTop: $(me).offset().top-100},'slow');});
+
+                ////$(me).get(0).scrollIntoView();
+
+                ////$(me).addClass('highlighter');
+                ////$(me).addClass('blink');
+			}
+
+			function highlightOFF(me){
+                ////me = $('#'+me).parent();
+				//findElementByText($(me).text()).removeClass('highlighter');
+				////$(me).removeClass('highlighter');
+				////$(me).removeClass('blink');
+				//////$(me).removeClass('linearBlink');
+                ////$('label').removeClass('linearBlink');
+			}
+
+            var toasts = [
+                new Toast('info', 'toast-top-left', 'Information!'),
+                new Toast('success', 'toast-top-left', 'Success!'),
+                new Toast('warning', 'toast-top-left', 'Warning!'),
+                new Toast('error', 'toast-top-left', 'Error!')
+            ];
+
+            toastr.options = {
+              "closeButton": true,
+              "debug": false,
+              "newestOnTop": false,
+              "progressBar": false,
+              "positionClass": "toast-top-right",
+              "preventDuplicates": true,
+              "onclick": null,
+              "showDuration": "300",
+              "hideDuration": "1000",
+              "timeOut": 0,
+              "extendedTimeOut": 0,
+              "showEasing": "swing",
+              "hideEasing": "linear",
+              "showMethod": "fadeIn",
+              "hideMethod": "fadeOut",
+              "tapToDismiss": false
+            }
+
+            function Toast(type, css, msg) {
+                this.type = type;
+                this.css = css;
+                this.msg = msg;
+            }
+
+            function showToast(i, msg, css) {
+                var t = toasts[i];
+                var msg = (typeof (msg) === "undefined")? t.msg : msg;
+                toastr.options.positionClass = (typeof (css) === 'undefined')? t.css : css;
+                toastr[t.type](msg);
+                $('#toast-container').addClass('no-print');
+                /*$('#toast-container').mouseout(function() {
+                    $('label').removeClass('linearBlink');
+                });*/
+            }
+
+            function toTopFn() {
+                $('html, body').animate({ scrollTop: 0 }, 'slow');
+                //https://www.w3schools.com/howto/howto_js_scroll_to_top.asp
+                //document.body.scrollTop = 0; // For Chrome, Safari and Opera
+                //document.documentElement.scrollTop = 0; // For IE and Firefox
+            }
+
+            function toBottomFn() {
+                $('html, body').animate({ scrollTop: $( document ).height() }, 'slow');
+
+                //document.body.scrollTop = $( document ).height(); // For Chrome, Safari and Opera
+                //document.documentElement.scrollTop = $( document ).height(); // For IE and Firefox
+            }
+
+            function iframeFixFn(_this,one_team) {
+                //fix iframe openstreetmaps zoom bug
+                $('iframe[id^="t'+one_team+'m0iframe"]').each(function(index) {
+                    $(this)[0].contentWindow.location.replace($(this)[0].src);
+                });
+                //_this.onclick=null;
+            }
+
+            function isVowelFn(char) {
+                char = char.toLowerCase();
+                return char === 'a' || char === 'e' || char === 'i' || char === 'o' || char === 'u' || false;
+            }
+
+            function updateDamageFractionTotals(teamID, missionID) {
+                id = 't'+ teamID + 'm' + missionID;
+                document.getElementById(id+"total_f_K").value = Math.round( 100 * (1 - parseFloat(document.getElementById(id+"total_dmf_K").value)) * parseFloat(document.getElementById(id+"total_K").value) )+' %';
+                document.getElementById(id+"total_f_KK").value = Math.round( 100 * (1 - parseFloat(document.getElementById(id+"total_dmf_KK").value)) * parseFloat(document.getElementById(id+"total_KK").value) )+' %';
+                document.getElementById(id+"total_f_RSA").value = Math.round( 100 * (1 - parseFloat(document.getElementById(id+"total_dmf_RSA").value)) * parseFloat(document.getElementById(id+"total_RSA").value) )+' %';
+                document.getElementById(id+"total_f_W").value = Math.round( 100 * (1 - parseFloat(document.getElementById(id+"total_dmf_W").value)) * parseFloat(document.getElementById(id+"total_W").value) )+' %';
+                document.getElementById(id+"total_f_V").value = Math.round( 100 * (1 - parseFloat(document.getElementById(id+"total_dmf_V").value)) * parseFloat(document.getElementById(id+"total_V").value) )+' %';
+                document.getElementById(id+"total_f_E").value = Math.round( 100 * (1 - parseFloat(document.getElementById(id+"total_dmf_E").value)) * parseFloat(document.getElementById(id+"total_E").value) )+' %';
+                document.getElementById(id+"total_f_B").value = Math.round( 100 * (1 - parseFloat(document.getElementById(id+"total_dmf_B").value)) * parseFloat(document.getElementById(id+"total_B").value) )+' %';
+                document.getElementById(id+"total_f_C").value = Math.round( 100 * (1 - parseFloat(document.getElementById(id+"total_dmf_C").value)) * parseFloat(document.getElementById(id+"total_C").value) )+' %';
+            }
+
+            function updateDamageFraction(prerequesitsVector,teamID, missionID,_this, myValue_K, myValue_KK, myValue_W, myValue_RSA, myValue_V, myValue_B, myValue_E, myValue_C){
+                id = 't'+ teamID + 'm' + missionID;
+                myId = $(_this).attr('id');
+                myIdNum = parseInt(myId.match(/\d+$/)[0], 10);
+
+                elem = null;
+                msg = '<ul>';
+                prerequisitesMet = 0;
+
+                if (_this.checked == true) {
+                    //I am not checked, I want to be checked
+                    for (var i = 0; i < prerequesitsVector.length; i++) {
+                        elem = document.getElementById(id+'Chkbx'+prerequesitsVector[i]);
+                        if (elem.checked) {
+                            prerequisitesMet++;
+                        } else {
+                            elemId = $(elem).attr('id');
+                            //msg += '<li>'+$(elem).parent().text().trim()+'</li>';
+                            ////msg += '<li>\“<a onmousedown="highlightON(\''+ elemId +'\')" onmouseout="highlightOFF(\''+ elemId +'\')"><b>'+$(elem).parent().text().trim()+'</b></a>\”</li>';
+                            msg += '<li>\“<a onmousedown="highlightON(\''+ elemId +'\')" onmouseout="highlightOFF(\''+ elemId +'\')"><b>'+$(elem).parent().text().trim().substring(0,20)+'...'+'</b></a>\”</li>';
+                        }
+                    }
+                    msg += '</ul>';
+                    if (prerequisitesMet == prerequesitsVector.length) {
+                        // prerequisites are met
+
+                        for (var i = 0; i < prerequesitsVector.length; i++) {
+                            elem = document.getElementById(id+'Chkbx'+prerequesitsVector[i]);
+                            //elem.setAttribute("data-dependent",parseInt(elem.getAttribute("data-dependent"))+1)
+                            xArr = elem.getAttribute("data-dependent").split(",").map(Number).filter(Boolean);
+                            elem.setAttribute("data-dependent",_.union(xArr, [myIdNum]).toString());
+                            //_.union([2,3], [2]);
+                        }
+
+                        // Calc val routine - start
+                        if (_this.checked == true) {
+                            document.getElementById(id+"total_dmf_K").value = parseFloat(document.getElementById(id+"total_dmf_K").value) + parseFloat(myValue_K);
+                            document.getElementById(id+"total_dmf_KK").value = parseFloat(document.getElementById(id+"total_dmf_KK").value) + parseFloat(myValue_KK);
+                            document.getElementById(id+"total_dmf_W").value = parseFloat(document.getElementById(id+"total_dmf_W").value) + parseFloat(myValue_W);
+                            document.getElementById(id+"total_dmf_RSA").value = parseFloat(document.getElementById(id+"total_dmf_RSA").value) + parseFloat(myValue_RSA);
+                            document.getElementById(id+"total_dmf_B").value = parseFloat(document.getElementById(id+"total_dmf_B").value) + parseFloat(myValue_B);
+                            document.getElementById(id+"total_dmf_V").value = parseFloat(document.getElementById(id+"total_dmf_V").value) + parseFloat(myValue_V);
+                            document.getElementById(id+"total_dmf_C").value = parseFloat(document.getElementById(id+"total_dmf_C").value) + parseFloat(myValue_C);
+                            document.getElementById(id+"total_dmf_E").value = parseFloat(document.getElementById(id+"total_dmf_E").value) + parseFloat(myValue_E);
+                        } else {
+                            document.getElementById(id+"total_dmf_K").value = parseFloat(document.getElementById(id+"total_dmf_K").value) - parseFloat(myValue_K);
+                            document.getElementById(id+"total_dmf_KK").value = parseFloat(document.getElementById(id+"total_dmf_KK").value) - parseFloat(myValue_KK);
+                            document.getElementById(id+"total_dmf_W").value = parseFloat(document.getElementById(id+"total_dmf_W").value) - parseFloat(myValue_W);
+                            document.getElementById(id+"total_dmf_RSA").value = parseFloat(document.getElementById(id+"total_dmf_RSA").value) - parseFloat(myValue_RSA);
+                            document.getElementById(id+"total_dmf_B").value = parseFloat(document.getElementById(id+"total_dmf_B").value) - parseFloat(myValue_B);
+                            document.getElementById(id+"total_dmf_V").value = parseFloat(document.getElementById(id+"total_dmf_V").value) - parseFloat(myValue_V);
+                            document.getElementById(id+"total_dmf_C").value = parseFloat(document.getElementById(id+"total_dmf_C").value) - parseFloat(myValue_C);
+                            document.getElementById(id+"total_dmf_E").value = parseFloat(document.getElementById(id+"total_dmf_E").value) - parseFloat(myValue_E);
+                        };
+                        updateDamageFractionTotals(teamID, missionID);
+                        // Calc val routine - end
+
+                    } else {
+                        // prerequisites are not met
+                        //alert("Prerequisites SOPs/Policies are not met!\n"+msg);
+                        //document.getElementById("alert-msg").innerHTML = '<div name="alert-msg" id="alert-msg" class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button> <p>Prerequisites SOPs/Policies are not met!<br />'+msg+'</p></div>';
+                        //$('#alert-msg').hide();
+                        //$('#alert-msg').show(1000);
+                        ////showToast(3, 'The following prerequisites SOPs/Policies for \“<a onmousedown="highlightON(\''+ myId +'\')" onmouseout="highlightOFF(\''+ myId +'\')"><b>'+$(_this).parent().text().trim()+'</b></a>\” are not checked:<br />'+msg, 'toast-top-right');
+                        showToast(3, 'The following prerequisites SOPs/Policies for \“<a onmousedown="highlightON(\''+ myId +'\')" onmouseout="highlightOFF(\''+ myId +'\')"><b>'+$(_this).parent().text().trim().substring(0,20)+'...'+'</b></a>\” are not checked:<br />'+msg, 'toast-top-right');
+
+                        _this.checked = false;
+                    }
+
+
+                } else {
+                    //I am checked, I want to be unchecked
+
+                    if (_this.getAttribute("data-dependent") == 0) {
+                        //  You can uncheck me
+
+                        for (var i = 0; i < prerequesitsVector.length; i++) {
+                            elem = document.getElementById(id+'Chkbx'+prerequesitsVector[i]);
+                            xArr = elem.getAttribute("data-dependent").split(",").map(Number).filter(Boolean);
+
+                            //elem.setAttribute("data-dependent",parseInt(elem.getAttribute("data-dependent"))-1)
+                            elem.setAttribute("data-dependent",_.without(xArr, myIdNum).toString());
+                             //_.without([2, 1, 2, 3], 1);
+                        }
+
+                        // Calc val routine - start
+                        if (_this.checked == true) {
+                            document.getElementById(id+"total_dmf_K").value = parseFloat(document.getElementById(id+"total_dmf_K").value) + parseFloat(myValue_K);
+                            document.getElementById(id+"total_dmf_KK").value = parseFloat(document.getElementById(id+"total_dmf_KK").value) + parseFloat(myValue_KK);
+                            document.getElementById(id+"total_dmf_W").value = parseFloat(document.getElementById(id+"total_dmf_W").value) + parseFloat(myValue_W);
+                            document.getElementById(id+"total_dmf_RSA").value = parseFloat(document.getElementById(id+"total_dmf_RSA").value) + parseFloat(myValue_RSA);
+                            document.getElementById(id+"total_dmf_B").value = parseFloat(document.getElementById(id+"total_dmf_B").value) + parseFloat(myValue_B);
+                            document.getElementById(id+"total_dmf_V").value = parseFloat(document.getElementById(id+"total_dmf_V").value) + parseFloat(myValue_V);
+                            document.getElementById(id+"total_dmf_C").value = parseFloat(document.getElementById(id+"total_dmf_C").value) + parseFloat(myValue_C);
+                            document.getElementById(id+"total_dmf_E").value = parseFloat(document.getElementById(id+"total_dmf_E").value) + parseFloat(myValue_E);
+                        } else {
+                            document.getElementById(id+"total_dmf_K").value = parseFloat(document.getElementById(id+"total_dmf_K").value) - parseFloat(myValue_K);
+                            document.getElementById(id+"total_dmf_KK").value = parseFloat(document.getElementById(id+"total_dmf_KK").value) - parseFloat(myValue_KK);
+                            document.getElementById(id+"total_dmf_W").value = parseFloat(document.getElementById(id+"total_dmf_W").value) - parseFloat(myValue_W);
+                            document.getElementById(id+"total_dmf_RSA").value = parseFloat(document.getElementById(id+"total_dmf_RSA").value) - parseFloat(myValue_RSA);
+                            document.getElementById(id+"total_dmf_B").value = parseFloat(document.getElementById(id+"total_dmf_B").value) - parseFloat(myValue_B);
+                            document.getElementById(id+"total_dmf_V").value = parseFloat(document.getElementById(id+"total_dmf_V").value) - parseFloat(myValue_V);
+                            document.getElementById(id+"total_dmf_C").value = parseFloat(document.getElementById(id+"total_dmf_C").value) - parseFloat(myValue_C);
+                            document.getElementById(id+"total_dmf_E").value = parseFloat(document.getElementById(id+"total_dmf_E").value) - parseFloat(myValue_E);
+                        };
+                        updateDamageFractionTotals(teamID, missionID);
+                        // Calc val routine - end
+
+                    } else {
+                        //  You cannot uncheck me
+                        dependentsVector = _this.getAttribute("data-dependent").split(",").map(Number).filter(Boolean);
+                        for (var i = 0; i < dependentsVector.length; i++) {
+                            elem = document.getElementById(id+'Chkbx'+dependentsVector[i]);
+                            if (elem.checked) {
+                                elemId = $(elem).attr('id');
+                                //msg += '<li>'+$(elem).parent().text().trim()+'</li>';
+                                ////msg += '<li>\“<a onmousedown="highlightON(\''+ elemId +'\')" onmouseout="highlightOFF(\''+ elemId +'\')"><b>'+$(elem).parent().text().trim()+'</b></a>\”</li>';
+                                msg += '<li>\“<a onmousedown="highlightON(\''+ elemId +'\')" onmouseout="highlightOFF(\''+ elemId +'\')"><b>'+$(elem).parent().text().trim().substring(0,20)+'...'+'</b></a>\”</li>';
+                            }
+                        }
+                        msg += '</ul>';
+                        //alert('Dependent SOPs/Policies are checked!\n'+msg);
+                        //document.getElementById("alert-msg").innerHTML = '<div name="alert-msg" id="alert-msg" class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button> <p>Dependent SOPs/Policies are checked!<br />'+msg+'</p></div>';
+                        //$('#alert-msg').hide();
+                        //$('#alert-msg').show(1000);
+                        ////showToast(3, 'The following dependent SOPs/Policies for \“<a onmousedown="highlightON(\''+ myId +'\')" onmouseout="highlightOFF(\''+ myId +'\')"><b>'+$(_this).parent().text().trim()+'</b></a>\” are checked:<br />'+msg, 'toast-top-right');
+                        showToast(3, 'The following dependent SOPs/Policies for \“<a onmousedown="highlightON(\''+ myId +'\')" onmouseout="highlightOFF(\''+ myId +'\')"><b>'+$(_this).parent().text().trim().substring(0,20)+'...'+'</b></a>\” are checked:<br />'+msg, 'toast-top-right');
+
+                        _this.checked = true;
+                    }
+                }
+            }
+
+            function ajaxFn(json) {
+                // add mission description and table
+                teamID = json.teamID;
+                missionID = json.missionID;
+                id = 't'+ teamID + 'm' + missionID;
+                accordionflag = 0;
+                //console.log(teamID);
+                //console.log(missionID);
+                //console.log(id);
+                displayMissionID=missionID+1;
+                displayMissionLevel=json.mission_level+1;
+                DivStr = '<div>'
+                +'<hr />'
+                +'<h6 id="'+id+'missionHeader">Mission #: ' + displayMissionID + ' (mission level: ' + displayMissionLevel + '/' + json.all_levels + ')</h6>'
+                +'<p>On the {{current_day|ordinal}} of {{current_month|month_name}}, '
+                +json.scenario_attackers_group_name+' attacked a group of aid workers in the city of '
+                +json.scenario_cities[0].city_name+'. The attack was '
+                +(isVowelFn(json.scenario_attack_context[0])?'an ':'a ')
+                +json.scenario_attack_context+' using '
+                +json.scenario_means_of_attack+'. {{ value|default:"" }}</p>'
+                +'<p> The attack caused ';
+
+                staffDamage = [];
+                if (json.damage_probability_by_type.K>0) staffDamage.push('kidnapping');
+                if (json.damage_probability_by_type.KK>0) staffDamage.push('killing');
+                if (json.damage_probability_by_type.W>0) staffDamage.push('wounding');
+                if (json.damage_probability_by_type.RSA>0) staffDamage.push('sexual assults');
+                if (staffDamage.length>0) DivStr += staffDamage.slice(0, -1).join(", ")+(staffDamage.length>1?' and ':'')+staffDamage.slice(-1)+' in the staff.';
+
+                assetsDamage=[];
+                if (json.damage_probability_by_type.V>0) assetsDamage.push('vehicles');
+                if (json.damage_probability_by_type.B>0) assetsDamage.push('buildings');
+                if (json.damage_probability_by_type.E>0) assetsDamage.push('equipment');
+                if (json.damage_probability_by_type.C>0) assetsDamage.push('commodities');
+                if (assetsDamage.length>0) DivStr += ' The attack also caused damages in '+ assetsDamage.slice(0, -1).join(", ")+(assetsDamage.length>1?' and ':'')+assetsDamage.slice(-1)+'.' ;
+
+                DivStr += '</p>'
+                +'<!--p>Mission goal: {{ value|default:"" }}</p-->'
+                +'<table class="table table-striped">'
+                +'<tr>'
+                +'<th>Item</th>'
+                +'<th>Description</th>'
+                +'</tr>'
+                +'<tr>'
+                +'<td>Who</td>'
+                +'<td>'+json.scenario_attackers_group_name+' {{ attackers_group_name }}</td>'
+                +'</tr>'
+                +'<tr>'
+                +'<td>What</td>'
+                +'<td>'+json.scenario_attack_context+' {{ scenario_attack_context }}</td>'
+                +'</tr>'
+                +'<tr>'
+                +'<td>Whom</td>'
+                +'<td>{{ value|default:"Aid workers" }}</td>'
+                +'</tr>'
+                +'<tr>'
+                +'<td>Where</td>'
+                +'<td>'+json.scenario_cities[0].city_name+' {{ scenario_cities.0.city_name }}</td>'
+                +'</tr>'
+                +'<tr>'
+                +'<td>When</td>'
+                +'<td>{{current_day}} {{current_month|month_name}}</td>'
+                +'</tr>'
+                +'<tr>'
+                +'<td>Weapon</td>'
+                +'<td>'+json.scenario_means_of_attack+' {{ scenario_means_of_attack }}</td>'
+                +'</tr>'
+                +'</table>';
+
+                // add map(s) of the city/cities
+                for (idx in json.scenario_cities) {
+                    one_sops_policies = json.scenario_cities[idx];
+                    DivStr +='<h5 align="middle">' + one_sops_policies.city_name +'</h5>'
+                    +'<iframe id="'+id+'iframe'+idx+'" style="margin-left: auto; margin-right: auto; display: block;" align="middle" width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://www.openstreetmap.org/export/embed.html?bbox='+one_sops_policies.get_bbox.join()+'&amp;layer=mapnik&amp;marker='+escape(one_sops_policies.lat) +','+escape(one_sops_policies.lng)+'" style="border: 1px solid black"></iframe>'
+                    +'<br />'
+                    +'<small>'
+                    +'<a target="_blank" href="http://www.openstreetmap.org/?lat='+escape(one_sops_policies.lat)+'&amp;lon='+escape(one_sops_policies.lng)+'&amp;zoom='+escape(one_sops_policies.zoom)+'&amp;layer=mapnik&amp;mlat='+escape(one_sops_policies.lat)+'&amp;mlon='+escape(one_sops_policies.lng)+'"></a>'
+                    +'</small>'
+                    +'<br />';
+                }
+
+                // add scenario svg
+                DivStr +='<hr />'
+                +'<div style="margin-left: auto; margin-right: auto; display: block;" align="middle">'
+                +json.scenario_svg
+                +'</div>'
+                +'<hr />'
+                +'<div style="margin-left: auto; margin-right: auto; display: block;" align="left">';
+
+                // add SOPs
+                DivStr +='<div id="'+id+'accordion" role="tablist">'
+
+                one_sops_policies_node_list = [json.sops_policies.sops_policies_precautionary_strategic, json.sops_policies.sops_policies_precautionary_tactical, json.sops_policies.sops_policies_precautionary_operational, json.sops_policies.sops_policies_adaptive_strategic, json.sops_policies.sops_policies_adaptive_tactical, json.sops_policies.sops_policies_adaptive_operational];
+                one_sops_policies_node_title_list = ['Precautionary Strategic SOPs/Policies:', 'Precautionary Tactical SOPs/Policies:', 'Precautionary Operationl SOPs/Policies:', 'Adaptive Strategic SOPs/Policies:', 'Adaptive Tactical SOPs/Policies:', 'Adaptive Operationl SOPs/Policies:'];
+                one_sops_policies_node_id_list = ['_p_s', '_p_t', '_p_o', '_a_s', '_a_t', '_a_o'];
+
+                for (jdx in one_sops_policies_node_list) {
+                    one_sops_policies_node = one_sops_policies_node_list[jdx];
+                    one_sops_policies_node_title = one_sops_policies_node_title_list[jdx];
+                    one_sops_policies_node_id = one_sops_policies_node_id_list[jdx];
+                    if (one_sops_policies_node.length > 0) {
+                        ++accordionflag;
+                        DivStr +='<div class="card">'
+                        +'<div class="card-header" role="tab" id="'+id+'heading'+one_sops_policies_node_id+'" data-toggle="" href="#'+id+'collapse'+one_sops_policies_node_id+'" aria-expanded="true" aria-controls="'+id+'collapse'+one_sops_policies_node_id+'">' //collapse
+                        +'<h5 class="mb-0"><a class="card-title">'+one_sops_policies_node_title+'</a></h5>'
+                        +'</div>'
+                        +'<div id="'+id+'collapse'+one_sops_policies_node_id+'" class="collapse '+(accordionflag>=1?'show':'')+'" role="tabpanel" aria-labelledby="'+id+'heading'+one_sops_policies_node_id+'" data-parent="#'+id+'accordion">'
+                        +'<div class="card-body">';
+                        for (idx in one_sops_policies_node) {
+                            sop_policy = one_sops_policies_node[idx];
+                            DivStr +='<div class="form-check">'
+                            +'<label class="form-check-label">'
+                            +'<input data-dependent="" id="'+id+'Chkbx'+sop_policy.id+'" class="form-check-input" type="checkbox" onchange="updateDamageFraction(['+sop_policy.Prerequesit_sop_policy+'], '+teamID+', '+missionID+', this, '+sop_policy.Damage_mitigation_fraction_by_type.K+' / '+json.scenario_total_damage_mitigation_fraction_by_type.K +', '+sop_policy.Damage_mitigation_fraction_by_type.KK+' / '+json.scenario_total_damage_mitigation_fraction_by_type.KK+', '+ sop_policy.Damage_mitigation_fraction_by_type.W+' / '+json.scenario_total_damage_mitigation_fraction_by_type.W+', '+ sop_policy.Damage_mitigation_fraction_by_type.RSA+' / '+json.scenario_total_damage_mitigation_fraction_by_type.RSA+' , '+ sop_policy.Damage_mitigation_fraction_by_type.V+' / '+json.scenario_total_damage_mitigation_fraction_by_type.V +', '+ sop_policy.Damage_mitigation_fraction_by_type.B+' / '+json.scenario_total_damage_mitigation_fraction_by_type.B +', '+ sop_policy.Damage_mitigation_fraction_by_type.E+' / '+json.scenario_total_damage_mitigation_fraction_by_type.E +', '+ sop_policy.Damage_mitigation_fraction_by_type.C+' / '+json.scenario_total_damage_mitigation_fraction_by_type.C+')" />'
+                            +sop_policy.Measure_description
+                            +'</label>'
+                            +'</div>';
+                        }
+                        DivStr +='</div></div></div>';
+                    };
+
+                }
+                DivStr +='</div>';
+
+                //close the div and add damages
+                //controls' ids need to be fixed
+                DivStr +='</div>'
+                +'<hr />'
+                +'<div style="margin-left: auto; margin-right: auto; display: block;" align="left">'
+                +'<div style="display: none;">damage fraction (K):   <input type="text" id="'+id+'total_K" value="'+json.damage_probability_by_type.K+'" readonly />     damage mitigation fraction (K):   <input type="text" id="'+id+'total_dmf_K" value="0" readonly /></div>'
+                +'<div style="display: none;">damage fraction (KK):  <input type="text" id="'+id+'total_KK" value="'+json.damage_probability_by_type.KK+'" readonly />   damage mitigation fraction (KK):  <input type="text" id="'+id+'total_dmf_KK" value="0" readonly /></div>'
+                +'<div style="display: none;">damage fraction (W):   <input type="text" id="'+id+'total_W" value="'+json.damage_probability_by_type.W+'" readonly />     damage mitigation fraction (W):   <input type="text" id="'+id+'total_dmf_W" value="0" readonly /></div>'
+                +'<div style="display: none;">damage fraction (RSA): <input type="text" id="'+id+'total_RSA" value="'+json.damage_probability_by_type.RSA+'" readonly /> damage mitigation fraction (RSA): <input type="text" id="'+id+'total_dmf_RSA" value="0" readonly /></div>'
+                +'<div style="display: none;">damage fraction (B):   <input type="text" id="'+id+'total_B" value="'+json.damage_probability_by_type.B+'" readonly />     damage mitigation fraction (B):   <input type="text" id="'+id+'total_dmf_B" value="0" readonly /></div>'
+                +'<div style="display: none;">damage fraction (V):   <input type="text" id="'+id+'total_V" value="'+json.damage_probability_by_type.V+'" readonly />     damage mitigation fraction (V):   <input type="text" id="'+id+'total_dmf_V" value="0" readonly /></div>'
+                +'<div style="display: none;">damage fraction (C):   <input type="text" id="'+id+'total_C" value="'+json.damage_probability_by_type.C+'" readonly />     damage mitigation fraction (C):   <input type="text" id="'+id+'total_dmf_C" value="0" readonly /></div>'
+                +'<div style="display: none;">damage fraction (E):   <input type="text" id="'+id+'total_E" value="'+json.damage_probability_by_type.E+'" readonly />     damage mitigation fraction (E):   <input type="text" id="'+id+'total_dmf_E" value="0" readonly /></div>'
+                +'<div style="display: none;">damage fraction (IS):  <input type="text" id="'+id+'total_IS" value="'+json.damage_probability_by_type.IS+'" readonly />   damage mitigation fraction (IS):  <input type="text" id="'+id+'total_dmf_IS" value="0" readonly /></div>'
+                +'<table class="table table-bordered table-condensed">'
+                +'<tbody>'
+                +'<tr>'
+                +'<td style="text-align: center">K</td>'
+                +'<td style="text-align: center">KK</td>'
+                +'<td style="text-align: center">W</td>'
+                +'<td style="text-align: center">RSA</td>'
+                +'<td style="text-align: center">B</td>'
+                +'<td style="text-align: center">V</td>'
+                +'<td style="text-align: center">C</td>'
+                +'<td style="text-align: center">E</td>'
+                +'<!--td style="text-align: center">IS</td-->'
+                +'</tr>'
+                +'<tr>'
+                +'<td class="damageTd"><input style="text-align: center;" type="text" id="'+id+'total_f_K" value="'+json.damage_probability_by_type.K+'" readonly class="form-control damageInputs" /></td>'
+                +'<td class="damageTd"><input style="text-align: center;" type="text" id="'+id+'total_f_KK" value="'+json.damage_probability_by_type.KK+'" readonly class="form-control damageInputs" /></td>'
+                +'<td class="damageTd"><input style="text-align: center;" type="text" id="'+id+'total_f_W" value="'+json.damage_probability_by_type.W+'" readonly class="form-control damageInputs" /></td>'
+                +'<td class="damageTd"><input style="text-align: center;" type="text" id="'+id+'total_f_RSA" value="'+json.damage_probability_by_type.RSA+'" readonly class="form-control damageInputs" /></td>'
+                +'<td class="damageTd"><input style="text-align: center;" type="text" id="'+id+'total_f_B" value="'+json.damage_probability_by_type.B+'" readonly class="form-control damageInputs" /></td>'
+                +'<td class="damageTd"><input style="text-align: center;" type="text" id="'+id+'total_f_V" value="'+json.damage_probability_by_type.V+'" readonly class="form-control damageInputs" /></td>'
+                +'<td class="damageTd"><input style="text-align: center;" type="text" id="'+id+'total_f_C" value="'+json.damage_probability_by_type.C+'" readonly class="form-control damageInputs" /></td>'
+                +'<td class="damageTd"><input style="text-align: center;" type="text" id="'+id+'total_f_E" value="'+json.damage_probability_by_type.E+'" readonly class="form-control damageInputs" /></td>'
+                +'<!--td class="damageTd"><input style="text-align: center;" type="text" id="'+id+'total_f_IS" value="'+json.damage_probability_by_type.IS+'" readonly class="form-control damageInputs" /></td-->'
+                +'</tr>'
+                +'</tbody>'
+                +'</table>'
+                +'</div>'
+                +'</div>';
+                $("#scenario-pane-"+teamID).append($(DivStr));
+                updateDamageFractionTotals(teamID, missionID);
+                document.getElementById("nextMissionIDTxt"+teamID).value = parseInt(missionID)+1;
+                document.getElementById("nextSeedValueTxt"+teamID).value = json.next_seed_value;
+                document.getElementById("generatedMissionIDTxt"+teamID).value = json.mission_level;
+                document.getElementById("lastMissionScore_2_Txt"+teamID).value = json.last_mission_score_2;
+                document.getElementById("lastMissionScore_1_Txt"+teamID).value = json.last_mission_score_1;
+                document.getElementById("lastMissionScoreTxt"+teamID).value = 0;
+
+                console.log("requested access completed successfully");
+                //console.log(JSON.stringify(json));
+                console.log('id: '+id)
+                console.log('json.mission_level: '+json.mission_level)
+                console.log('json.seed_value: '+json.seed_value);
+                console.log('json.next_seed_value: '+json.next_seed_value);
+
+                //$('[id^="'+'t'+teamID+'m'+missionID+'collapse'+'"]').addClass('show');
+
+                $('#pleaseWaitDialog').modal('hide');
+                //document.getElementById(id+'missionHeader').scrollIntoView(true);
+                if (missionID != 0) {
+                    $('html:not(:animated), body:not(:animated)').animate({
+                        scrollTop: $('#'+id+'missionHeader').offset().top-80
+                    }, 'slow');
+                }
+            }
+
+
+            function request_scenario(teamID, missionID, generatedMissionID, seed_value, last_mission_score, last_mission_score_1, last_mission_score_2, location, country, current_day, current_month){
+                $('#pleaseWaitDialog').modal();
+                //id = 't'+ teamID + 'm' + missionID;
+                //console.log(teamID);
+                //console.log(missionID);
+                /*console.log(seed_value);
+                console.log(location);
+                console.log(country);
+                console.log(current_day);
+                console.log(current_month);*/
+
+   				toastr.clear();
+                //$('[id^="'+'t'+ teamID+'m'+(missionID-1)+'collapse'+'"]').addClass('show');
+                //$('[id^="'+'t'+ teamID+'m'+(missionID-1)+'collapse'+'"]').removeClass('collapse');
+
+                var nodes = document.getElementById("scenario-pane-"+teamID).getElementsByTagName('*'); // recheck tagname
+                for(var i = 0; i < nodes.length; i++){
+                    nodes[i].disabled = true;
+                }
+
+                $.ajax({
+                    type: 'GET',
+                    url: "/scenario_gen/",
+                    //async: false,
+                    data : {
+                        'teamID':teamID,
+                        'missionID':missionID,
+                        'mission_level':generatedMissionID,
+                        'seed_value':seed_value,
+                        'last_mission_score':last_mission_score,
+                        'last_mission_score_1':last_mission_score_1,
+                        'last_mission_score_2':last_mission_score_2,
+                        'location':location,
+                        'country':country,
+                        'current_day':current_day,
+                        'current_month':current_month
+                        },
+                    success : function(json) {
+                        ajaxFn(json);
+                    },
+                    error: function (ajaxContext) {
+                        console.log(ajaxContext.responseText);
+                    }
+                })
+            }
+
+        </script>
+        <title>iTrack Project - Generated Scenario ({{seed_value}})</title>
+
+        <!-- Bootstrap core CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+
+        <!-- Font Awesome CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+        <!-- Toastr CSS -->
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
+
+        <style>
+            body {
+                padding-top: 90px;
+                }
+
+            @media (max-width: 979px) {
+                body {
+                    padding-top: 90px;
+                }
+            }
+
+            .damageInputs {
+                display: block !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border: 0 !important;
+                width: 100% !important;
+                border-radius: 0 !important;
+                line-height: 1 !important;
+            }
+
+            .damageTd {margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .centerInDiv {
+                width: 100px;
+                height: 100px;
+
+                position: absolute;
+                top:0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+
+                margin: auto;
+            }
+
+            .highlighter{
+            	background-color: #FFFF00;
+	            /*font-weight: bold;*/
+            }
+
+            /*https://stackoverflow.com/questions/4894488/blinking-text-cross-browser*/
+            @-webkit-keyframes blink {
+                from {
+                    opacity: 1.0;
+                }
+                to {
+                    opacity: 0.0;
+                }
+            }
+            .blink {
+                -webkit-animation-name: blink;
+                -webkit-animation-iteration-count: infinite;
+                -webkit-animation-timing-function: cubic-bezier(1.0, 0, 0, 1.0);
+                -webkit-animation-duration: 1s;
+            }
+
+            /*https://stackoverflow.com/questions/34439452/blinking-background-color-animation*/
+            .linearBlink {
+                animation-name: anim;
+                animation-duration: 0.5s;
+                animation-iteration-count: infinite;
+                animation-direction: alternate;
+                animation-timing-function: linear;
+                /*background-color: rgb(117,209,63);
+                border-color: #e50000;
+
+                border-width: 3px;
+                border-style: solid;
+                color: #fff;
+                text-shadow: 0 0 3px #000;*/
+            }
+            .bezierBlink {
+                animation-timing-function: cubic-bezier(.8,0,.2,1);
+            }
+            .stepsBlink {
+                animation-name: anim-half;
+                animation-timing-function: steps(1,end);
+            }
+
+            @keyframes anim {
+                to {
+                    background-color: #FFFF00;/*#e50000;*/
+                    /*border-color: rgb(117,209,63);*/
+                }
+            }
+            @keyframes anim-half {
+                50% {
+                    background-color: #FFFF00;/*#e50000;*/
+                    /*border-color: rgb(117,209,63);*/
+                }
+            }
+
+            .y-scrollable {
+              /*height:307px;*/
+              height: 470px;/*340px;*/ /*442px;*/
+              overflow-y: scroll;
+              overflow-x: hidden;
+              width:100%;
+            }
+
+            @media not print {
+                .xy-scrollable {
+                  /*width: 550px;*/
+                  /*height:307px;*/
+                  height: 470px;/*340px;*/ /*442px;*/
+                  /*white-space: nowrap;*/
+                  overflow-x: auto;
+                  overflow-y: auto;
+                }
+            }
+
+            @media print
+            {
+                .no-print, .no-print *
+                {
+                    display: none !important;
+                }
+
+                tr:nth-child(even) {
+                    background-color: #f5f5f5 !important;
+                    -webkit-print-color-adjust: exact;
+                }
+                td:nth-child(even) {
+                    background-color: #f5f5f5 !important;
+                    -webkit-print-color-adjust: exact;
+                }
+
+                /*.table-striped {
+                        background-color: #dedede !important;
+                }*/
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Fixed navbar -->
+        <nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
+            <a class="navbar-brand" href="#"><img width="150px" src="http://www.itrack-project.eu/templates/bootstrap3/logo.png" alt="iTrack Project"/></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    <!--li class="nav-item active">
+                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#">Disabled</a>
+                    </li-->
+                </ul>
+                <div class="form-inline mt-2 mt-md-0">
+                    <h4 class="mr-sm-2">iTRACK - Scenario Generator</h4>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Begin page content -->
+        <div class="container">
+            <div name="alert-msg" id="alert-msg" style="position: fixed; top: 78px; left: 0; right: 0; z-index: 7000;"></div>
+            <div class="row">
+                <div class="col">
+                    <h4>Generated Scenario(s) (seed = {{general_seed_value}})</h4>
+                </div>
+                <div class="col-1">
+                    <button class='btn btn-default pull-right' onclick='toBottomFn()' data-toggle='tooltip' title='Scroll to the bottom'><i class="fa fa-angle-double-down" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <hr />
+        {% if 1 in team %}
+            <nav class="nav nav-tabs" id="nav-tabList" role="tablist">
+            {% for one_team in team %}
+                <a class="nav-item nav-link{% if one_team == 0 %} {{ ' active' }} {% endif %}" id="nav-home-tab{{one_team}}" data-toggle="tab" href="#nav-home{{one_team}}" role="tab" aria-controls="nav-home{{one_team}}" aria-selected="true">
+                    Team # {{ one_team|add:1 }}
+                </a>
+            {% endfor %}
+            </nav>
+        {% endif %}
+            <div class="tab-content" id="nav-tabContent">
+            {% for one_team in team %}
+                <div id="nav-home{{one_team}}" {% if 1 in team %}class="tab-pane fade show{% if one_team == 0 %} {{ ' active' }} {% endif %}" role="tabpanel" aria-labelledby="nav-home-tab">
+                    <p style="line-height: 75%;"></p>{% else %}>{% endif %}
+                    <!--begining of mission-->
+                    <h5>Country: {{ country|lookup:one_team|title }} - Location: {{ location|lookup:one_team|upper }}</h5>
+                    <div id="scenario-pane-{{one_team}}"></div>
+                    <hr />
+                    <input type='hidden' id='nextSeedValueTxt{{one_team}}' value='{{next_seed_value|lookup:one_team}}' readonly />
+                    <input type='hidden' id='nextMissionIDTxt{{one_team}}' value='0' readonly />
+                    <input type='hidden' id='generatedMissionIDTxt{{one_team}}' value='0' readonly />
+                    <input type='hidden' id='lastMissionScore_2_Txt{{one_team}}' value='0' readonly />
+                    <input type='hidden' id='lastMissionScore_1_Txt{{one_team}}' value='0' readonly />
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-inline">
+                                <div class="form-group form-group mx-sm-3">
+                                    <label for='lastMissionScoreTxt{{one_team}}' class='sr-only'>Score: </label>
+                                    <input data-toggle='tooltip' title='Score of the last mission (between 0 and 100)' type='number' id='lastMissionScoreTxt{{one_team}}' class='form-control' oninput="if (this.value > 100) {this.value = 100;} else if (this.value < 0) {this.value = 0;};" min='0' max='100' value='0' />
+                                </div>
+                                <button id='nextScenarioBtn{{one_team}}' class='btn btn-primary' onclick='request_scenario("{{one_team}}",document.getElementById("nextMissionIDTxt{{one_team}}").value,document.getElementById("generatedMissionIDTxt{{one_team}}").value,document.getElementById("nextSeedValueTxt{{one_team}}").value,document.getElementById("lastMissionScoreTxt{{one_team}}").value,document.getElementById("lastMissionScore_1_Txt{{one_team}}").value,document.getElementById("lastMissionScore_2_Txt{{one_team}}").value,"{{location|lookup:one_team}}","{{country|lookup:one_team}}","{{current_day}}","{{current_month}}");' data-toggle='tooltip' title='Submit score'>Submit</button>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <button class='btn btn-default pull-right' onclick='toTopFn()' data-toggle='tooltip' title='Scroll to the top'><i class="fa fa-angle-double-up" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <!--end of mission-->
+            {% endfor %}
+            </div>
+
+            <hr />
+            <div style="display: none;">
+                <h6>Debugging information (to be removed!)</h6>
+                <p>general_seed_value:{{general_seed_value}}</p>
+                <p>location: {{location}}</p>
+                <p>team: {{team}}</p>
+                <p>country: {{country}}</p>
+                <p>next_seed_value: {{next_seed_value}}</p>
+                <p>current_day: {{current_day}}</p>
+                <p>current_month: {{current_month}}</p>
+            </div>
+        </div>
+        <!--https://stackoverflow.com/questions/29511873/show-spinner-and-disable-page-while-waiting-for-ajax-request-->
+        <div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false">
+            <!--div class="modal-header">
+                <h1>Loading new scenario...</h1>
+            </div-->
+            <div class="modal-body centerInDiv">
+                <div id="ajax_loader" class="">
+                    <img src="/static/img/ajax-loader.svg" style="display: block; margin-left: auto; margin-right: auto;">
+                </div>
+            </div>
+        </div>
+        <!--footer class="footer">
+            <div class="container">
+                <span class="text-muted">iTRACK - Scenario Generator.</span>
+            </div>
+        </footer-->
+
+
+        <!-- Bootstrap core JavaScript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <!--script>window.jQuery || document.write('<script src="https://getbootstrap.com/assets/js/vendor/jquery.min.js"><\/script>')</script-->
+        <!--script src="https://getbootstrap.com/assets/js/vendor/popper.min.js"></script-->
+        <!--script src="https://getbootstrap.com/dist/js/bootstrap.min.js"></script-->
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+        <!--script-- src="https://getbootstrap.com/assets/js/ie10-viewport-bug-workaround.js"></script-->
+
+        <script type="text/javascript">
+
+        /*json = {'sops_policies': sops_policies,
+                'scenario_svg': scenario_svg,
+                'damage_probability_by_type': damage_probability_by_type,
+                }*/
+
+        $("document").ready(function() {
+            {% autoescape off %}
+            {% for one_team in team %}
+                ajaxFn({{ json|lookup:one_team }});
+                //document.getElementById('t{{one_team}}m0iframe0').contentWindow.location.replace(document.getElementById('t{{one_team}}m0iframe0').src);
+                //request_scenario({{one_team}},0,0,{{next_seed_value|lookup:one_team}},0,0,0,'{{location|lookup:one_team}}','{{country|lookup:one_team}}',{{current_day}},{{current_month}});
+            {% endfor %}
+            {% endautoescape %}
+
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            })
+
+            $('a[data-toggle="tab"]').one('shown.bs.tab', function (e) {
+                var target = $(e.target).attr("href") // activated tab
+                iframeFixFn(e.target,target.replace(/^.*\D+/g, ''));
+                //alert(target);
+            });
+
+        });
+        </script>
+    </body>
+</html>

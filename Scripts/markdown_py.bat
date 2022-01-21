@@ -1,0 +1,1 @@
+@"c:\onedrive\my research\itrack\mypyvenvs\venv\scripts\python.exe" "c:\onedrive\my research\itrack\mypyvenvs\venv\Scripts\markdown_py" %*

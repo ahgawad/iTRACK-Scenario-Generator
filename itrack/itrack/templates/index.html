@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+
+        <!--website icon Start-->
+        <link rel="apple-touch-icon" sizes="180x180" href="../static/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="../static/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="../static/favicon/favicon-16x16.png">
+        <link rel="manifest" href="../static/favicon/manifest.json">
+        <link rel="mask-icon" href="../static/favicon/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="theme-color" content="#ffffff">
+        <!--website icon End-->
+
+        <script type="text/javascript">
+            document.write("<base href='" + document.location.protocol + "//" + document.location.host + "' />");
+            function toTopFn() {
+                $('html, body').animate({ scrollTop: 0 }, 'slow');
+                //https://www.w3schools.com/howto/howto_js_scroll_to_top.asp
+                //document.body.scrollTop = 0; // For Chrome, Safari and Opera
+                //document.documentElement.scrollTop = 0; // For IE and Firefox
+            }
+
+            function toBottomFn() {
+                $('html, body').animate({ scrollTop: $( document ).height() }, 'slow');
+
+                //document.body.scrollTop = $( document ).height(); // For Chrome, Safari and Opera
+                //document.documentElement.scrollTop = $( document ).height(); // For IE and Firefox
+            }
+
+        </script>
+        <title>iTrack Project - Scenario Generator Users Guide</title>
+
+        <!-- Bootstrap core CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+
+        <!-- Font Awesome CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+        <style>
+            body {
+                padding-top: 90px;
+                }
+
+            @media (max-width: 979px) {
+                body {
+                    padding-top: 90px;
+                }
+            }
+
+            .centerInDiv {
+                width: 100px;
+                height: 100px;
+
+                position: absolute;
+                top:0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+
+                margin: auto;
+            }
+
+            code {
+                background: hsl(220, 80%, 90%);
+            }
+
+            pre {
+                white-space: pre-wrap;
+                background: hsl(30,80%,90%);
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Fixed navbar -->
+        <nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
+            <a class="navbar-brand" href="/scenario/"><img width="150px" src="http://www.itrack-project.eu/templates/bootstrap3/logo.png" alt="iTrack Project"/></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon">
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    <!--li class="nav-item active">
+                        <a class="nav-link" href="/scenario/">Home <span class="sr-only">(current)</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/scenario/">Link</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="/scenario/">Disabled</a>
+                    </li-->
+                </ul>
+                <div class="form-inline mt-2 mt-md-0">
+                    <h4 class="mr-sm-2">iTRACK - Scenario Generator</h4>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Begin page content -->
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h4>Scenario Generator Users Guide</h4>
+                </div>
+                <div class="col-1">
+                    <button class='btn btn-default pull-right' onclick='toBottomFn()' data-toggle='tooltip' title='Scroll to the bottom'><i class="fa fa-angle-double-down" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <hr />
+            <div class="">
+                <p><a href="http://localhost:8000/">http://localhost:8000/</a></p>
+                <p>This link now takes us to this help page.</p>
+                <br/>
+                <br/>
+                <h5>Web functionalities:</h5>
+                <p><a href="http://localhost:8000/scenario/">http://localhost:8000/scenario/</a></p>
+                <p>This link without any additional parameters takes us to a single team scenario, location and country are selected randomly.</p>
+                <br/>
+                <br/>
+                <p><a href="http://localhost:8000/scenario/?location=r">http://localhost:8000/scenario/?location=r</a></p>
+                <p>To set location, select from:</p>
+                <ul>
+                    <li/>h: Home (private home, not compound)
+                    <li/>oc: Office or organization compound/residence
+                    <li/>ps: Project site (village, camp, distribution
+                    point, hospital, etc.)
+                    <li/>p: Other public location (street, market,
+                    restaurant, etc.)
+                    <li/>r: Road (in transit)
+                    <li/>c: Custody (official forces/police)
+                    <li/>*: random (default if not supppied)
+                </ul>
+                <br/>
+                <br/>
+                <p><a href="http://localhost:8000/scenario/?country=iraq">http://localhost:8000/scenario/?country=iraq</a></p>
+                <p>To set country, select from:</p>
+                <ul>
+                    <li/>iraq: Iraq
+                    <li/>syria: Syria/Syrian Arab Republic
+                    <li/>yemen: Yemen
+                    <li/>*: random (default if not supplied)
+                </ul>
+                <br/>
+                <br/>
+                <p>Both country and location can be set togther:
+                <a href="http://localhost:8000/scenario/?country=syria&amp;location=r">http://localhost:8000/scenario/?country=syria&amp;location=r</a></p>
+                <br/>
+                <br/>
+                <p>For management view (multiple teams view)</p>
+                <p><a href="http://localhost:8000/scenario/?country=syria&amp;location=*,r,c,h,ps,*,*">http://localhost:8000/scenario/?country=syria&amp;location=*,r,c,h,ps,*,*</a></p>
+                <p><a href="http://localhost:8000/scenario/?country=syria,iraq,yemen&amp;location=*,r,c,h,ps,*,*">http://localhost:8000/scenario/?country=syria,iraq,yemen&amp;location=*,r,c,h,ps,*,*</a></p>
+                <br/>
+                <br/>
+                <p>location vector is the base that decides the number of teams. Corresponding countries are taken from the country vector if supplied, otherwise countries are selected randomly.</p>
+                <br/>
+                <br/>
+                <p>In all cases we can set the day and/or month, otherwise their default values are of today&rsquo;s.</p>
+                <p><a href="http://localhost:8000/scenario/?country=syria,iraq,yemen&amp;location=*,r,c,h,ps,*,*&amp;day=5&amp;month=1">http://localhost:8000/scenario/?country=syria,iraq,yemen&amp;location=*,r,c,h,ps,*,*&amp;day=5&amp;month=1</a></p>
+                <br/>
+                <br/>
+                <p>To be able to generate the same missions (taking into consideration that all inputs will remain the same), a seed value could be supplied as follows:</p>
+                <p><a href="http://localhost:8000/scenario/?country=syria,iraq,yemen&amp;location=*,r,c,h,ps,*,*&amp;day=5&amp;month=1&amp;seed_value=1">http://localhost:8000/scenario/?country=syria,iraq,yemen&amp;location=*,r,c,h,ps,*,*&amp;day=5&amp;month=1&amp;seed_value=1</a></p>
+                <p>Seed value takes any number.</p>
+                <p>The seed value appears on the top of the page all the time, to be used later for regenration .</p>
+                <br/>
+                <br/>
+                <p>To conclude, all possible parameters are:</p>
+                <ul>
+                    <li/>seed_value
+                    <li/>location
+                    <li/>country
+                    <li/>day
+                    <li/>month
+                </ul>
+                <br/>
+                <hr/>
+                <br/>
+                <h5>API:</h5>
+                <p>API could be accessed via:</p>
+                <p><a href="http://localhost:8000/scenario_api/">http://localhost:8000/scenario_api/</a></p>
+                <p>All possible parameters used with web view could be fed to the API (<b>Only for single scenario</b>) via GET:</p>
+                <ul>
+                    <li/>seed_value
+                    <li/>location
+                    <li/>country
+                    <li/>day
+                    <li/>month
+                </ul>
+                <p>In addition the API could take the following additional parameters:
+                <ul>
+                    <li/>last_mission_level
+                    <li/>mean_score
+                </ul>
+                </p>
+                <h6>Output Example:</h6>
+                <p>
+<pre><code>{
+  "seed_value": 4.1015290330622e+18,
+  "mission_level": 0,
+  "all_levels": 2,
+  "scenario_location": "Custody (official forces\/police)",
+  "scenario_attack_context": "Detention (by official government forces or police, where abuse takes place)",
+  "scenario_means_of_attack": "Bodily assault\/beating\/stabbing with non-fire weapons or no weapons",
+  "scenario_attackers_group_name": "Islamic State of Iraq and the Levant (ISIL)",
+  "scenario_cities": [
+    {
+      "lng": 44.548457,
+      "lat": 34.055354,
+      "get_bbox": [
+        44.4606092694,
+        33.9675062694,
+        44.6363047306,
+        34.1432017306
+      ],
+      "city_name": "Khalis district"
+    }
+  ],
+  "sops_policies": {
+    "sops_policies_adaptive_tactical": [],
+    "sops_policies_precautionary_operational": [
+      {
+        "id": 55,
+        "Ds_level": "O",
+        "Damage_mitigation_fraction_by_type": {
+          "C": 0,
+          "B": 0,
+          "E": 0,
+          "KK": 0.5,
+          "W": 0.5,
+          "RSA": 0,
+          "V": 0,
+          "K": 0
+        },
+        "Measure_description": "S&S > First Aid > If assigned or travelling to a remote location, must attend a First-Aid course prior to departure date.",
+        "Prerequesit_sop_policy": "1,100",
+        "Implementation_stage": "P"
+      },
+		...
+    ],
+    "sops_policies_adaptive_strategic": [],
+    "sops_policies_precautionary_strategic": [],
+    "sops_policies_adaptive_operational": [],
+    "sops_policies_precautionary_tactical": []
+  },
+  "damage_probability_by_type": {
+    "C": 0,
+    "B": 0,
+    "E": 0,
+    "KK": 0.20959703787139,
+    "W": 0.67451616054798,
+    "RSA": 0,
+    "V": 0.60553943484376,
+    "K": 0.57012894550709
+  }
+}</code></pre>
+                </p>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col">
+                </div>
+                <div class="col-1">
+                    <button class='btn btn-default pull-right' onclick='toTopFn()' data-toggle='tooltip' title='Scroll to the top'><i class="fa fa-angle-double-up" aria-hidden="true"></i></button>
+                </div>
+            </div>
+
+            <hr />
+
+        </div>
+
+        <!--footer class="footer">
+            <div class="container">
+                <span class="text-muted">iTRACK - Scenario Generator.</span>
+            </div>
+        </footer-->
+
+
+        <!-- Bootstrap core JavaScript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <!--script>window.jQuery || document.write('<script src="https://getbootstrap.com/assets/js/vendor/jquery.min.js"><\/script>')</script-->
+        <!--script src="https://getbootstrap.com/assets/js/vendor/popper.min.js"></script-->
+        <!--script src="https://getbootstrap.com/dist/js/bootstrap.min.js"></script-->
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+        <!--script-- src="https://getbootstrap.com/assets/js/ie10-viewport-bug-workaround.js"></script-->
+
+        <script type="text/javascript">
+
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            })
+
+            $("document").ready(function() {
+            });
+        </script>
+    </body>
+</html>
