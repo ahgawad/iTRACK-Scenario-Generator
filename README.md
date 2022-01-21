@@ -1,1 +1,6 @@
 # iTRACK-Scenario-Generator
+# Scenarios are designed to support decision-makers in gaining a better understanding of the consequences of their decisions. Scenario-based simulations, hence, present an ideal way to train decision-makers for complex and high-risk situations. Usually, training scenarios are human-authored which is limiting in terms of the number and diversity of the generated scenarios, in addition to being a time- and resource-consuming process. This system is an implementation of an automated scenario generator system to support designers of virtual, augmented and simulated reality humanitarian training setups. The system is based on knowledge extracted from publicly available humanitarian related databases. Moreover, the system can produce scenarios that adapt to user performance in addition to meeting certain training requirements.
+
+# More information is available at: https://www.itrack-project.eu/page/media_items/d6.6---scenario-generator39.php
+# The related EU deliverable is available at: https://www.itrack-project.eu/media/articles/files/iTRACK%20-%20D6.6%E2%80%93%20Scenario%20Generator.pdf
+# Related academic publication realted to the system titled "Automated Scenario Generation for Training of Humanitarian Responders in High- Risk Settings" is avaliable at: http://ijssst.info/Vol-19/No-5/paper23.pdf
